@@ -135,7 +135,6 @@ else
 
     cd "$tmpdir/aws-ec2-ssh"
 fi
-exit
 
 cp authorized_keys_command.sh $AUTHORIZED_KEYS_COMMAND_FILE
 cp import_users.sh $IMPORT_USERS_SCRIPT_FILE
