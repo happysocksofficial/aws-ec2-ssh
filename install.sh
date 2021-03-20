@@ -26,6 +26,7 @@ Install import_users.sh and authorized_key_commands.
     -r release         Specify a release of aws-ec2-ssh to download from GitHub. This argument is
                        passed to \`git clone -b\` and so works with branches and tags.
                        Defaults to 'master'
+    -n                 Don't download repo from git, use local
 
 
 EOF
@@ -45,8 +46,9 @@ USERADD_ARGS=""
 USERDEL_PROGRAM=""
 USERDEL_ARGS=""
 RELEASE="master"
+NODOWNLOAD=""
 
-while getopts :hva:i:l:s:p:u:d:f:r: opt
+while getopts :hva:i:l:s:p:u:d:f:r:n opt
 do
     case $opt in
         h)
@@ -83,6 +85,9 @@ do
         r)
             RELEASE="$OPTARG"
             ;;
+        n)
+            NODOWNLOAD="TRUE"
+            ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
             show_help
@@ -103,6 +108,7 @@ export USERADD_PROGRAM
 export USERADD_ARGS
 export USERDEL_PROGRAM
 export USERDEL_ARGS
+export NODOWNLOAD
 
 # check if AWS CLI exists
 if ! [ -x "$(which aws)" ]; then
@@ -116,13 +122,20 @@ if ! [ -x "$(which git)" ]; then
     exit 1
 fi
 
-tmpdir=$(mktemp -d)
+if [ "$NODOWNLOAD" == "TRUE" ]
+then
+    echo nodownload is set, using local repo
+else
+    echo nodownload is not set, cloning repo from github
+    tmpdir=$(mktemp -d)
 
-cd "$tmpdir"
+    cd "$tmpdir"
 
-git clone -b "$RELEASE" https://github.com/widdix/aws-ec2-ssh.git
+    git clone -b "$RELEASE" https://github.com/happysocksofficial/aws-ec2-ssh
 
-cd "$tmpdir/aws-ec2-ssh"
+    cd "$tmpdir/aws-ec2-ssh"
+fi
+exit
 
 cp authorized_keys_command.sh $AUTHORIZED_KEYS_COMMAND_FILE
 cp import_users.sh $IMPORT_USERS_SCRIPT_FILE
