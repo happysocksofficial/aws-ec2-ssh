@@ -125,6 +125,8 @@ fi
 if [ "$NODOWNLOAD" == "TRUE" ]
 then
     echo nodownload is set, using local repo
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    cd $DIR
 else
     echo nodownload is not set, cloning repo from github
     tmpdir=$(mktemp -d)
